@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hussain.blog.config.AppConstant;
 import com.hussain.blog.entities.Post;
 import com.hussain.blog.payloads.ApiResponse;
 import com.hussain.blog.payloads.PostDto;
+import com.hussain.blog.payloads.PostResponse;
 import com.hussain.blog.services.PostService;
 
 @RestController
@@ -69,12 +72,17 @@ public class PostController {
 	
 	//Get All Post
 	
-	@GetMapping("/post/posts")
-	public ResponseEntity<List <PostDto>> getAllPost(){
+	@GetMapping("/posts")
+	public ResponseEntity<PostResponse> getAllPost(
+			
+			@RequestParam (value="pageNumber",defaultValue=AppConstant.PAGE_NUMBER ,required=false) Integer pageNumber,
+			@RequestParam(value="pageSize" ,defaultValue=AppConstant.PAGE_SIZE, required=false) Integer pageSize,
+			@RequestParam(value="sortBy",defaultValue=AppConstant.SORT_BY,required=false) String sortBy
+			){
 		
-		List<PostDto> postDtos=this.postService.getAllPost();
+		PostResponse postResponse=this.postService.getAllPost(pageNumber,pageSize,sortBy);
 		
-		return new ResponseEntity<List<PostDto>>(postDtos,HttpStatus.OK);
+		return new ResponseEntity<PostResponse>(postResponse,HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/post/{postId}")
@@ -87,5 +95,12 @@ public class PostController {
 		PostDto updatePost = this.postService.updatePost(postDto, postId);
 		
 		return new ResponseEntity<PostDto>(updatePost,HttpStatus.OK);
+	}
+	@GetMapping("/post/search/{keyword}")
+	public ResponseEntity<List<PostDto>> searchPost(@PathVariable("keyword") String keywaord){
+		
+		List<PostDto> postDtos=this.postService.searchPost(keywaord);
+		
+		return new ResponseEntity<List<PostDto>>(postDtos,HttpStatus.OK);
 	}
 }

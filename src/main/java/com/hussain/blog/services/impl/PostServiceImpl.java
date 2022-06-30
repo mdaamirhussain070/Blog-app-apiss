@@ -6,6 +6,10 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.hussain.blog.entities.Category;
@@ -13,6 +17,7 @@ import com.hussain.blog.entities.Post;
 import com.hussain.blog.entities.User;
 import com.hussain.blog.exceptions.ResourceNotFoundException;
 import com.hussain.blog.payloads.PostDto;
+import com.hussain.blog.payloads.PostResponse;
 import com.hussain.blog.repositories.CategoryRepo;
 import com.hussain.blog.repositories.PostRepo;
 import com.hussain.blog.repositories.UserRepo;
@@ -69,13 +74,36 @@ public class PostServiceImpl implements PostService {
 		this.postRepo.delete(post);
 	}
 	
-	public List<PostDto> getAllPost(){
+	public PostResponse getAllPost(Integer pageNumber,Integer pageSize,String sortBy){
 		
-		List<Post> posts=this.postRepo.findAll();
+		Pageable p=PageRequest.of(pageNumber, pageSize,Sort.by(sortBy).descending());
+		
+		 
+		Page<Post> pageposts=this.postRepo.findAll(p);
+		
+		List<Post> posts=pageposts.getContent();
 		
 		List<PostDto> postDtos=posts.stream().map((post)->this.modelmapper.map(post, PostDto.class)).collect(Collectors.toList());
 		
-		return postDtos;
+		PostResponse postResponse=new PostResponse();
+		postResponse.setContent(postDtos);
+		postResponse.setPageNumber(pageposts.getNumber());
+		postResponse.setPageSize(pageposts.getSize());
+		postResponse.setTotalElement(pageposts.getTotalElements());
+		postResponse.setTotalPages(pageposts.getTotalPages());
+		postResponse.setLastPage(pageposts.isLast());
+		
+		return postResponse;
+	}
+
+	private Sort SortBy(String sortBy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Sort sortBy(String sortBy) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -113,8 +141,13 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<PostDto> searchPost(String keywaord) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<Post> posts=this.postRepo.findByTitleContaining(keywaord);
+		
+		List<PostDto> postDtos=posts.stream().map((post)->this.modelmapper.map(post,PostDto.class)).collect(Collectors.toList());
+		
+		
+		return postDtos;
 	}
 
 }
