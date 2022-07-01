@@ -1,8 +1,11 @@
 package com.hussain.blog.payloads;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.hussain.blog.entities.Category;
+import com.hussain.blog.entities.Comment;
 import com.hussain.blog.entities.User;
 
 import lombok.Getter;
@@ -28,6 +31,6 @@ public class PostDto {
 	
 	private UserDto user;
 	
-	
+	private List<CommentDto> comment=new ArrayList<>();
 
 }

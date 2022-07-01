@@ -35,5 +35,8 @@ public class User {
 	private String about;
 	
 	@OneToMany(mappedBy="user",cascade = CascadeType.ALL,fetch=FetchType.LAZY)
-	private List<Post> posts=new ArrayList<>();
+	private List<Post> post=new ArrayList<>();
+	
+//	@OneToMany(mappedBy="users",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+//	private List<Comment> comment=new ArrayList<>();
 }
